@@ -18,7 +18,7 @@ public class RotateToRelHeading extends Command
 		
 		requires(Robot.driveTrain);
 		requires(Robot.navx);
-		requires(Robot.navxController);
+		requires(Robot.navxPID);
 	}
 
 	@Override
@@ -28,11 +28,11 @@ public class RotateToRelHeading extends Command
 //		double initialAngle = Robot.navx.getFusedHeading();
 		SmartDashboard.putNumber("Initial Angle", initialAngle);
 //		
-		Robot.navxController.resetInputRange(initialAngle);
+		Robot.navxPID.resetInputRange(initialAngle);
 		
 //		Robot.navxController.setSetpoint(initialAngle + deltaSetpoint); // set setpoint relative does the same thing
-		Robot.navxController.setSetpointRelative(deltaSetpoint);
-		Robot.navxController.enable();
+		Robot.navxPID.setSetpointRelative(deltaSetpoint);
+		Robot.navxPID.enable();
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class RotateToRelHeading extends Command
 
 	@Override
 	protected boolean isFinished() {
-		return Robot.navxController.onTarget();
+		return Robot.navxPID.onTarget();
 	}
 
 	@Override
@@ -57,12 +57,12 @@ public class RotateToRelHeading extends Command
 //		double finalAngle = Robot.navx.getFusedHeading();
 		SmartDashboard.putNumber("Final Angle", finalAngle);
 		
-		Robot.navxController.disable();
+		Robot.navxPID.disable();
 	}
 
 	@Override
 	protected void interrupted()
 	{
-		Robot.navxController.disable();
+		Robot.navxPID.disable();
 	}
 }

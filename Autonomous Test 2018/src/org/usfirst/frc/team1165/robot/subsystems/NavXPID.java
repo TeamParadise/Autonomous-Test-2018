@@ -2,14 +2,13 @@ package org.usfirst.frc.team1165.robot.subsystems;
 
 import org.usfirst.frc.team1165.robot.Robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
  */
-public class NavX_PID extends PIDSubsystem
+public class NavXPID extends PIDSubsystem
 {
 
 	private static final double kP = 0.10;
@@ -21,7 +20,7 @@ public class NavX_PID extends PIDSubsystem
 	
 	private double output;
 	
-    public NavX_PID()
+    public NavXPID()
     {
     	super("NavX PID", kP, kI, kD, kF);
 
@@ -55,9 +54,9 @@ public class NavX_PID extends PIDSubsystem
     
     public void report()
     {
-    	SmartDashboard.putNumber("Target", getSetpoint());
-    	SmartDashboard.putNumber("PID Output", output);
-    	SmartDashboard.putBoolean("On Target", onTarget());
+    	SmartDashboard.putNumber("NavX PID Target", getSetpoint());
+    	SmartDashboard.putNumber("NavX PID Output", output);
+    	SmartDashboard.putBoolean("NavX PID On Target", onTarget());
 //    	if (onTarget()) DriverStation.reportError("On Target", false);
     }
 }

@@ -26,11 +26,6 @@ public class DriveWithJoystick extends Command
 	protected void execute()
 	{
 		Robot.driveTrain.drive(Robot.oi.getX(), Robot.oi.getY(), Robot.oi.getTwist(), 0);
-//		Robot.driveTrain.drive(Robot.oi.getX(), Robot.oi.getY(), Robot.oi.getTwist(), Robot.navx.getAngle());
-//		Robot.driveTrain.drive(Robot.oi.getX(), Robot.oi.getY(), Robot.oi.getTwist(), Robot.navx.getFusedHeading());
-		
-		Robot.driveTrain.report();
-		Robot.navx.report();
 	}
 
 	// Make this return true when this Command no longer needs to run execute()

@@ -1,8 +1,6 @@
 package org.usfirst.frc.team1165.robot;
 
 import org.usfirst.frc.team1165.robot.commands.ResetEncoder;
-import org.usfirst.frc.team1165.robot.commands.auto.DriveStraight;
-import org.usfirst.frc.team1165.robot.commands.auto.RotateToRelHeading;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -14,17 +12,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class OI
 {
-	public Joystick stick = new Joystick(RobotMap.JOYSTICK_PORT);
+	private Joystick stick = new Joystick(RobotMap.JOYSTICK_PORT);
 
-	public JoystickButton resetEncoder = new JoystickButton(stick, RobotMap.RESET_BUTTON);
-//	public JoystickButton rotateButton = new JoystickButton(stick, RobotMap.ROTATE_BUTTON);
-	public JoystickButton driveStraightButton = new JoystickButton(stick, RobotMap.DRIVE_STRAIGHT_BUTTON);
+	private JoystickButton resetEncoder = new JoystickButton(stick, RobotMap.RESET_BUTTON);
+//	private JoystickButton rotateButton = new JoystickButton(stick, RobotMap.ROTATE_BUTTON);
+//	private JoystickButton driveStraightButton = new JoystickButton(stick, RobotMap.DRIVE_STRAIGHT_BUTTON);
 	
 	public OI()
 	{
 		resetEncoder.whenPressed(new ResetEncoder());
 //		rotateButton.whenPressed(new RotateToRelHeading(90));
-		driveStraightButton.whenPressed(new DriveStraight(15));
+//		driveStraightButton.whenPressed(new DriveStraight(15));
 	}
 	
 	public double getX() {

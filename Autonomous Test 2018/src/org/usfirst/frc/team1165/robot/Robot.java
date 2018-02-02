@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1165.robot.commands.auto.DriveStraight;
 import org.usfirst.frc.team1165.robot.commands.auto.RotateToRelHeading;
 import org.usfirst.frc.team1165.robot.subsystems.DriveTrain;
-import org.usfirst.frc.team1165.robot.subsystems.DriveTrain_PID;
+import org.usfirst.frc.team1165.robot.subsystems.DriveTrainPID;
 import org.usfirst.frc.team1165.robot.subsystems.NavX;
-import org.usfirst.frc.team1165.robot.subsystems.NavX_PID;
+import org.usfirst.frc.team1165.robot.subsystems.NavXPID;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,9 +30,9 @@ import org.usfirst.frc.team1165.robot.subsystems.NavX_PID;
 public class Robot extends TimedRobot
 {
 	public static DriveTrain driveTrain;
-	public static DriveTrain_PID driveTrainPID;
+	public static DriveTrainPID driveTrainPID;
 	public static NavX navx;
-	public static NavX_PID navxController;
+	public static NavXPID navxPID;
 
 	public static OI oi;
 
@@ -46,15 +46,15 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit() {
 		driveTrain = new DriveTrain();
-		driveTrainPID = new DriveTrain_PID();
+		driveTrainPID = new DriveTrainPID();
 		navx = new NavX();
-		navxController = new NavX_PID();
+		navxPID = new NavXPID();
 		
 		oi = new OI();
 		
 		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Rotate to Relative Heading", new RotateToRelHeading(90));
-		autoChooser.addObject("Drive Straight", new DriveStraight(15));
+		autoChooser.addObject("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
+		autoChooser.addObject("Drive Straight (45)", new DriveStraight(45));
 		autoChooser.addDefault("Rotate to Relative Heading", new RotateToRelHeading(90));
 		
 		SmartDashboard.putData("Auto Mode", autoChooser);
@@ -66,7 +66,7 @@ public class Robot extends TimedRobot
 		driveTrain.report();
 		driveTrainPID.report();
 		navx.report();
-		navxController.report();
+		navxPID.report();
 		
 		oi.report();
 	}

@@ -52,6 +52,20 @@ public class DriveTrain extends Subsystem
 	{
 		robotDrive.driveCartesian(x, y, twist, angle);
 	}
+	
+	public void tankDriveLeft(double output)
+	{
+		frontLeft.set(output);
+		rearLeft.set(output);
+	}
+	
+	public void tankDriveRight(double output)
+	{
+		frontRight.set(-output);
+		rearRight.set(-output);
+	}
+	
+    /////////////////////////////////// ENCODER STUFF ///////////////////////////////////
 
 	public void resetLeftEncoder()
 	{
@@ -75,7 +89,7 @@ public class DriveTrain extends Subsystem
 	
 	public double getRightPositionInches()
 	{
-		return (-frontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
+		return (frontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
 	}
 	
 	public double getRightDistanceInches()
@@ -87,6 +101,14 @@ public class DriveTrain extends Subsystem
 		return (getLeftDistanceInches() + getRightDistanceInches()) / 2.0;
 	}
 	
+	public void resetEncoders()
+	{
+		resetLeftEncoder();
+		resetRightEncoder();
+	}
+	
+    //////////////////////////////// END OF ENCODER STUFF ////////////////////////////////
+
 	public void report()
 	{
 		SmartDashboard.putNumber("Front Left Speed", frontLeft.get());
@@ -94,8 +116,11 @@ public class DriveTrain extends Subsystem
 		SmartDashboard.putNumber("Front Right Speed", frontRight.get());
 		SmartDashboard.putNumber("Rear Right Speed", rearRight.get());
 
-		SmartDashboard.putNumber("Front Left Quad Pos", getLeftDistanceInches());
+		SmartDashboard.putNumber("Left Quad Pos", getLeftDistanceInches());
+		SmartDashboard.putNumber("Right Quad Pos", getRightDistanceInches());
 
-		SmartDashboard.putNumber("Front Left Init Position", initLeftPosition);
+//		SmartDashboard.putNumber("Front Left Init Position", initLeftPosition);
+		
+		SmartDashboard.putNumber("Drive Train Avg Enc Dist", getAverageEncoderDistance());
 	}
 }
