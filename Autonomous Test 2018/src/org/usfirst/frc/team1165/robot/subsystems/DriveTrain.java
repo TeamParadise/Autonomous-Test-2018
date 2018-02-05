@@ -17,66 +17,72 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * An example subsystem.  You can replace me with your own Subsystem.
+ * An example subsystem. You can replace me with your own Subsystem.
  */
 public class DriveTrain extends Subsystem
 {
-	private MecanumDrive robotDrive;
-
 	private WPI_TalonSRX frontLeft;
 	private WPI_TalonSRX rearLeft;
 	private WPI_TalonSRX frontRight;
 	private WPI_TalonSRX rearRight;
-	
+
+	private MecanumDrive robotDrive;
+
 	private double initLeftPosition = 0;
 	private double initRightPosition = 0;
-	
+
 	public DriveTrain()
 	{
 		frontLeft = new WPI_TalonSRX(RobotMap.FRONT_LEFT_PORT);
 		rearLeft = new WPI_TalonSRX(RobotMap.REAR_LEFT_PORT);
 		frontRight = new WPI_TalonSRX(RobotMap.FRONT_RIGHT_PORT);
 		rearRight = new WPI_TalonSRX(RobotMap.REAR_RIGHT_PORT);
-		
+
 		robotDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
-		
-		resetLeftEncoder();
+
+		resetEncoders();
 	}
-	
+
 	public void initDefaultCommand()
 	{
-		 setDefaultCommand(new DriveWithJoystick());
+		setDefaultCommand(new DriveWithJoystick());
 	}
-	
+
 	public void drive(double x, double y, double twist, double angle)
 	{
 		robotDrive.driveCartesian(x, y, twist, angle);
 	}
-	
+
+	public void stop()
+	{
+		drive(0, 0, 0, 0);
+	}
+
 	public void tankDriveLeft(double output)
 	{
 		frontLeft.set(output);
 		rearLeft.set(output);
 	}
-	
+
 	public void tankDriveRight(double output)
 	{
 		frontRight.set(-output);
 		rearRight.set(-output);
 	}
-	
-    /////////////////////////////////// ENCODER STUFF ///////////////////////////////////
+
+	/////////////////////////////////// ENCODER STUFF
+	/////////////////////////////////// ///////////////////////////////////
 
 	public void resetLeftEncoder()
 	{
 		initLeftPosition = getLeftPositionInches();
 	}
-	
+
 	public double getLeftPositionInches()
 	{
 		return (-frontLeft.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
 	}
-	
+
 	public double getLeftDistanceInches()
 	{
 		return getLeftPositionInches() - initLeftPosition;
@@ -86,28 +92,30 @@ public class DriveTrain extends Subsystem
 	{
 		initRightPosition = getRightPositionInches();
 	}
-	
+
 	public double getRightPositionInches()
 	{
 		return (frontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
 	}
-	
+
 	public double getRightDistanceInches()
 	{
 		return getRightPositionInches() - initRightPosition;
 	}
-	
-	public double getAverageEncoderDistance() {
+
+	public double getAverageEncoderDistance()
+	{
 		return (getLeftDistanceInches() + getRightDistanceInches()) / 2.0;
 	}
-	
+
 	public void resetEncoders()
 	{
 		resetLeftEncoder();
 		resetRightEncoder();
 	}
-	
-    //////////////////////////////// END OF ENCODER STUFF ////////////////////////////////
+
+	//////////////////////////////// END OF ENCODER STUFF
+	//////////////////////////////// ////////////////////////////////
 
 	public void report()
 	{
@@ -116,11 +124,7 @@ public class DriveTrain extends Subsystem
 		SmartDashboard.putNumber("Front Right Speed", frontRight.get());
 		SmartDashboard.putNumber("Rear Right Speed", rearRight.get());
 
-		SmartDashboard.putNumber("Left Quad Pos", getLeftDistanceInches());
-		SmartDashboard.putNumber("Right Quad Pos", getRightDistanceInches());
-
-//		SmartDashboard.putNumber("Front Left Init Position", initLeftPosition);
-		
-		SmartDashboard.putNumber("Drive Train Avg Enc Dist", getAverageEncoderDistance());
+		SmartDashboard.putNumber("Left Encoder", getLeftDistanceInches());
+		SmartDashboard.putNumber("Right Encoder", getRightDistanceInches());
 	}
 }

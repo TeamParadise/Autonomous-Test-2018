@@ -30,7 +30,8 @@ public class DriveWithJoystick extends Command
 
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
-	protected boolean isFinished() {
+	protected boolean isFinished()
+	{
 		return false;
 	}
 
@@ -38,6 +39,7 @@ public class DriveWithJoystick extends Command
 	@Override
 	protected void end()
 	{
+		Robot.driveTrain.stop();
 	}
 
 	// Called when another command which requires one or more of the same
@@ -45,5 +47,6 @@ public class DriveWithJoystick extends Command
 	@Override
 	protected void interrupted()
 	{
+		end();
 	}
 }

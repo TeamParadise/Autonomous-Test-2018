@@ -15,39 +15,45 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * An example subsystem.  You can replace me with your own Subsystem.
+ * An example subsystem. You can replace me with your own Subsystem.
  */
 public class NavX extends Subsystem
 {
 	private AHRS ahrs;
-	
+
 	public NavX()
 	{
-		try {
+		try
+		{
 			ahrs = new AHRS(SerialPort.Port.kMXP);
-		} catch (RuntimeException ex) {
+		} catch (RuntimeException ex)
+		{
 			DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
 		}
 	}
 
 	@Override
-	public void initDefaultCommand() {
-//		 setDefaultCommand(new DriveWithJoystick());
+	public void initDefaultCommand()
+	{
+		// setDefaultCommand(new DriveWithJoystick());
 	}
-	
-	public void reset() {
+
+	public void reset()
+	{
 		ahrs.reset();
 	}
-	
-	public double getAngle() {
+
+	public double getAngle()
+	{
 		return ahrs.getAngle();
 	}
-	
-	public double getFusedHeading() {
-//		return getAngle() % 360;
+
+	public double getFusedHeading()
+	{
+		// return getAngle() % 360;
 		return ahrs.getFusedHeading(); // needs to be calibrated
 	}
-	
+
 	public void report()
 	{
 		SmartDashboard.putNumber("Angle", ahrs.getAngle());

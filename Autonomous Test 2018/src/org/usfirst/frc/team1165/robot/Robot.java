@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team1165.robot.commands.auto.AutoTest;
 import org.usfirst.frc.team1165.robot.commands.auto.DriveStraight;
 import org.usfirst.frc.team1165.robot.commands.auto.RotateToRelHeading;
 import org.usfirst.frc.team1165.robot.subsystems.DriveTrain;
@@ -36,27 +37,28 @@ public class Robot extends TimedRobot
 
 	public static OI oi;
 
-	private static Command autonomousCommand;
 	private static SendableChooser<Command> autoChooser;
-	
+	private static Command autonomousCommand;
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
-	public void robotInit() {
+	public void robotInit()
+	{
 		driveTrain = new DriveTrain();
 		driveTrainPID = new DriveTrainPID();
 		navx = new NavX();
 		navxPID = new NavXPID();
-		
+
 		oi = new OI();
-		
+
 		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
 		autoChooser.addObject("Drive Straight (45)", new DriveStraight(45));
-		autoChooser.addDefault("Rotate to Relative Heading", new RotateToRelHeading(90));
-		
+		autoChooser.addObject("Auto Test", new AutoTest());
+		autoChooser.addDefault("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
+
 		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
 
@@ -67,22 +69,23 @@ public class Robot extends TimedRobot
 		driveTrainPID.report();
 		navx.report();
 		navxPID.report();
-		
+
 		oi.report();
 	}
-	
+
 	/**
 	 * This function is called once each time the robot enters Disabled mode.
 	 * You can use it to reset any subsystem information you want to clear when
 	 * the robot is disabled.
 	 */
 	@Override
-	public void disabledInit() {
-
+	public void disabledInit()
+	{
 	}
 
 	@Override
-	public void disabledPeriodic() {
+	public void disabledPeriodic()
+	{
 		Scheduler.getInstance().run();
 	}
 
@@ -93,43 +96,46 @@ public class Robot extends TimedRobot
 	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
 	 * getString code to get the auto name from the text box below the Gyro
 	 *
-	 * <p>You can add additional auto modes by adding additional commands to the
+	 * <p>
+	 * You can add additional auto modes by adding additional commands to the
 	 * chooser code above (like the commented example) or additional comparisons
 	 * to the switch structure below with additional strings & commands.
 	 */
 	@Override
-	public void autonomousInit() {
+	public void autonomousInit()
+	{
 		autonomousCommand = autoChooser.getSelected();
 
-		if (autonomousCommand != null) {
+		if (autonomousCommand != null)
 			autonomousCommand.start();
-		}
 	}
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
 	@Override
-	public void autonomousPeriodic() {
+	public void autonomousPeriodic()
+	{
 		Scheduler.getInstance().run();
 	}
 
 	@Override
-	public void teleopInit() {
+	public void teleopInit()
+	{
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (autonomousCommand != null) {
+		if (autonomousCommand != null)
 			autonomousCommand.cancel();
-		}
 	}
 
 	/**
 	 * This function is called periodically during operator control.
 	 */
 	@Override
-	public void teleopPeriodic() {
+	public void teleopPeriodic()
+	{
 		Scheduler.getInstance().run();
 	}
 
@@ -137,6 +143,7 @@ public class Robot extends TimedRobot
 	 * This function is called periodically during test mode.
 	 */
 	@Override
-	public void testPeriodic() {
+	public void testPeriodic()
+	{
 	}
 }

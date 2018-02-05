@@ -11,11 +11,11 @@ import org.usfirst.frc.team1165.robot.Robot;
 public class RotateToRelHeading extends Command
 {
 	private double deltaSetpoint;
-	
+
 	public RotateToRelHeading(double deltaSetpoint)
 	{
 		this.deltaSetpoint = deltaSetpoint;
-		
+
 		requires(Robot.driveTrain);
 		requires(Robot.navx);
 		requires(Robot.navxPID);
@@ -24,13 +24,14 @@ public class RotateToRelHeading extends Command
 	@Override
 	protected void initialize()
 	{
-		double initialAngle = Robot.navx.getAngle();
-//		double initialAngle = Robot.navx.getFusedHeading();
+		// double initialAngle = Robot.navx.getAngle();
+		double initialAngle = Robot.navx.getFusedHeading();
 		SmartDashboard.putNumber("Initial Angle", initialAngle);
-//		
+		//
 		Robot.navxPID.resetInputRange(initialAngle);
-		
-//		Robot.navxController.setSetpoint(initialAngle + deltaSetpoint); // set setpoint relative does the same thing
+
+		// Robot.navxController.setSetpoint(initialAngle + deltaSetpoint); //
+		// set setpoint relative does the same thing
 		Robot.navxPID.setSetpointRelative(deltaSetpoint);
 		Robot.navxPID.enable();
 	}
@@ -38,31 +39,27 @@ public class RotateToRelHeading extends Command
 	@Override
 	protected void execute()
 	{
-//		if(Robot.navxController.onTarget())
-//		{
-//			Robot.driveTrain.drive(0, 0, 0, 0);
-//			SmartDashboard.putNumber("On Target Angle", Robot.navx.getAngle());
-//		}
 	}
 
 	@Override
-	protected boolean isFinished() {
+	protected boolean isFinished()
+	{
 		return Robot.navxPID.onTarget();
 	}
 
 	@Override
 	protected void end()
 	{
-		double finalAngle = Robot.navx.getAngle();
-//		double finalAngle = Robot.navx.getFusedHeading();
+		// double finalAngle = Robot.navx.getAngle();
+		double finalAngle = Robot.navx.getFusedHeading();
 		SmartDashboard.putNumber("Final Angle", finalAngle);
-		
+
 		Robot.navxPID.disable();
 	}
 
 	@Override
 	protected void interrupted()
 	{
-		Robot.navxPID.disable();
+		end();
 	}
 }

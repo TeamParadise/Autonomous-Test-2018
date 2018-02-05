@@ -19,90 +19,107 @@ public class DriveTrainPID extends Subsystem
 
 	private double leftOutput;
 	private double rightOutput;
-	
+
 	public DriveTrainPID()
 	{
-		leftController = new PIDController(0.01, 0, 0, 0.01, new PIDSource() {
-			public void setPIDSourceType(PIDSourceType pidSource) {
+		leftController = new PIDController(0.01, 0, 0, 0.01, new PIDSource()
+		{
+			public void setPIDSourceType(PIDSourceType pidSource)
+			{
 			}
-			public PIDSourceType getPIDSourceType() {
+
+			public PIDSourceType getPIDSourceType()
+			{
 				return PIDSourceType.kDisplacement;
 			}
-			public double pidGet() {
+
+			public double pidGet()
+			{
 				return Robot.driveTrain.getLeftDistanceInches();
 			}
-		}, new PIDOutput() {
-			public void pidWrite(double output) {
+		}, new PIDOutput()
+		{
+			public void pidWrite(double output)
+			{
 				leftOutput = output;
 				Robot.driveTrain.tankDriveLeft(output);
 			}
 		});
-		
-		rightController = new PIDController(0.01, 0, 0, 0.01, new PIDSource() {
-			public void setPIDSourceType(PIDSourceType pidSource) {
+
+		rightController = new PIDController(0.01, 0, 0, 0.01, new PIDSource()
+		{
+			public void setPIDSourceType(PIDSourceType pidSource)
+			{
 			}
-			public PIDSourceType getPIDSourceType() {
+
+			public PIDSourceType getPIDSourceType()
+			{
 				return PIDSourceType.kDisplacement;
 			}
-			public double pidGet() {
+
+			public double pidGet()
+			{
 				return Robot.driveTrain.getRightDistanceInches();
 			}
-		}, new PIDOutput() {
-			public void pidWrite(double output) {
+		}, new PIDOutput()
+		{
+			public void pidWrite(double output)
+			{
 				rightOutput = output;
 				Robot.driveTrain.tankDriveRight(output);
 			}
 		});
-		
-		leftController.setInputRange(-100, 100);
-		leftController.setOutputRange(-0.2, 0.2);
+
+		resetInputRange(100);
+
+		leftController.setOutputRange(-0.3, 0.3);
 		leftController.setAbsoluteTolerance(5);
 		leftController.setContinuous(false);
-		
-		rightController.setInputRange(-100, 100);
-		rightController.setOutputRange(-0.2, 0.2);
+
+		rightController.setOutputRange(-0.3, 0.3);
 		rightController.setAbsoluteTolerance(5);
 		rightController.setContinuous(false);
 	}
-	
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
-    }
-    
-    public void resetInputRange(double overUnder)
-    {
-    	leftController.setInputRange(-overUnder, overUnder);
-    	rightController.setInputRange(-overUnder, overUnder);
-    }
-    
-    public void enable()
-    {
-    	leftController.enable();
-    	rightController.enable();
-    }
-    
-    public void disable()
-    {
-    	leftController.disable();
-    	rightController.disable();
-    }
-    
-    public void setSetpoint(double targetDistance)
-    {
-    	leftController.setSetpoint(targetDistance);
-    	rightController.setSetpoint(targetDistance);
-    }
 
-    public boolean onTarget() {
-    	return leftController.onTarget() && rightController.onTarget();
-    }
+	public void initDefaultCommand()
+	{
+		// Set the default command for a subsystem here.
+		// setDefaultCommand(new MySpecialCommand());
+	}
 
-    public void report()
-    {
-    	SmartDashboard.putNumber("Drive Train PID 2 Left Output", leftOutput);
-    	SmartDashboard.putNumber("Drive Train PID 2 Right Output", rightOutput);
-    	SmartDashboard.putBoolean("Drive Train PID 2 On Target", onTarget());
-    }
+	public void resetInputRange(double overUnder)
+	{
+		leftController.setInputRange(-overUnder, overUnder);
+		rightController.setInputRange(-overUnder, overUnder);
+	}
+
+	public void enable()
+	{
+		leftController.enable();
+		rightController.enable();
+	}
+
+	public void disable()
+	{
+		leftController.disable();
+		rightController.disable();
+	}
+
+	public void setSetpoint(double targetDistance)
+	{
+		leftController.setSetpoint(targetDistance);
+		rightController.setSetpoint(targetDistance);
+	}
+
+	public boolean onTarget()
+	{
+		return leftController.onTarget() && rightController.onTarget();
+	}
+
+	public void report()
+	{
+		SmartDashboard.putNumber("Drive Train PID Left Output", leftOutput);
+		SmartDashboard.putNumber("Drive Train PID Right Output", rightOutput);
+		SmartDashboard.putBoolean("Drive Train PID On Target", onTarget());
+	}
 }
-

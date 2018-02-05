@@ -15,34 +15,39 @@ public class OI
 	private Joystick stick = new Joystick(RobotMap.JOYSTICK_PORT);
 
 	private JoystickButton resetEncoder = new JoystickButton(stick, RobotMap.RESET_BUTTON);
-//	private JoystickButton rotateButton = new JoystickButton(stick, RobotMap.ROTATE_BUTTON);
-//	private JoystickButton driveStraightButton = new JoystickButton(stick, RobotMap.DRIVE_STRAIGHT_BUTTON);
-	
+	// private JoystickButton rotateButton = new JoystickButton(stick,
+	// RobotMap.ROTATE_BUTTON);
+	// private JoystickButton driveStraightButton = new JoystickButton(stick,
+	// RobotMap.DRIVE_STRAIGHT_BUTTON);
+
 	public OI()
 	{
 		resetEncoder.whenPressed(new ResetEncoder());
-//		rotateButton.whenPressed(new RotateToRelHeading(90));
-//		driveStraightButton.whenPressed(new DriveStraight(15));
+		// rotateButton.whenPressed(new RotateToRelHeading(90));
+		// driveStraightButton.whenPressed(new DriveStraight(15));
 	}
-	
-	public double getX() {
+
+	public double getX()
+	{
 		return dampen(stick.getX());
 	}
-	
-	public double getY() {
+
+	public double getY()
+	{
 		return dampen(-stick.getY());
 	}
-	
-	public double getTwist() {
+
+	public double getTwist()
+	{
 		return dampen(stick.getTwist());
 	}
-	
+
 	public double dampen(double value)
 	{
-		double damped = Math.pow(value, 3);		
-		return Math.abs(damped) < 0.1 ? 0: damped;
+		double damped = Math.pow(value, 3);
+		return Math.abs(damped) < 0.1 ? 0 : damped;
 	}
-	
+
 	public void report()
 	{
 		SmartDashboard.putNumber("X", getX());

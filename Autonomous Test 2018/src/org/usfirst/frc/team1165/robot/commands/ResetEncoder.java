@@ -9,12 +9,14 @@ import org.usfirst.frc.team1165.robot.Robot;
  */
 public class ResetEncoder extends Command
 {
-	public ResetEncoder() {
+	public ResetEncoder()
+	{
 		requires(Robot.driveTrain);
 	}
 
 	@Override
-	protected void initialize() {
+	protected void initialize()
+	{
 		Robot.driveTrain.resetLeftEncoder();
 		Robot.driveTrain.resetRightEncoder();
 	}
@@ -27,7 +29,8 @@ public class ResetEncoder extends Command
 
 	// Make this return true when this Command no longer needs to run execute()
 	@Override
-	protected boolean isFinished() {
+	protected boolean isFinished()
+	{
 		return true;
 	}
 
