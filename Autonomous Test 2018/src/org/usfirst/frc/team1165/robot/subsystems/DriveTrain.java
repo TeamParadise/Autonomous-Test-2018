@@ -7,40 +7,47 @@
 
 package org.usfirst.frc.team1165.robot.subsystems;
 
-import org.usfirst.frc.team1165.robot.RobotMap;
+import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_FRONT_LEFT;
+import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_FRONT_RIGHT;
+import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_REAR_LEFT;
+import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_REAR_RIGHT;
+
+import org.usfirst.frc.team1165.robot.Robot;
 import org.usfirst.frc.team1165.robot.commands.DriveWithJoystick;
+import org.usfirst.frc.team1165.robot.subsystems.DriveTrainPID.Correction;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * An example subsystem. You can replace me with your own Subsystem.
  */
-public class DriveTrain extends Subsystem
+public class DriveTrain extends Subsystem implements PIDSource, PIDOutput
 {
-	private WPI_TalonSRX frontLeft;
-	private WPI_TalonSRX rearLeft;
-	private WPI_TalonSRX frontRight;
-	private WPI_TalonSRX rearRight;
+	private WPI_TalonSRX mFrontLeft = new WPI_TalonSRX(DRIVE_TALON_FRONT_LEFT);
+	private WPI_TalonSRX mRearLeft = new WPI_TalonSRX(DRIVE_TALON_REAR_LEFT);
+	private WPI_TalonSRX mFrontRight = new WPI_TalonSRX(DRIVE_TALON_FRONT_RIGHT);
+	private WPI_TalonSRX mRearRight = new WPI_TalonSRX(DRIVE_TALON_REAR_RIGHT);
 
-	private MecanumDrive robotDrive;
+	private SpeedControllerGroup mLeftDrive = new SpeedControllerGroup(mFrontLeft, mRearLeft);
+	private SpeedControllerGroup mRightDrive = new SpeedControllerGroup(mFrontRight, mRearRight);
 
-	private double initLeftPosition = 0;
+	private DifferentialDrive mDrive = new DifferentialDrive(mLeftDrive, mRightDrive);
+
 	private double initRightPosition = 0;
+
+	private static final double TWIST_CORRECTION = 0.05;
 
 	public DriveTrain()
 	{
-		frontLeft = new WPI_TalonSRX(RobotMap.FRONT_LEFT_PORT);
-		rearLeft = new WPI_TalonSRX(RobotMap.REAR_LEFT_PORT);
-		frontRight = new WPI_TalonSRX(RobotMap.FRONT_RIGHT_PORT);
-		rearRight = new WPI_TalonSRX(RobotMap.REAR_RIGHT_PORT);
-
-		robotDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
-
-		resetEncoders();
+		resetRightEncoder();
 	}
 
 	public void initDefaultCommand()
@@ -48,45 +55,28 @@ public class DriveTrain extends Subsystem
 		setDefaultCommand(new DriveWithJoystick());
 	}
 
-	public void drive(double x, double y, double twist, double angle)
+	public void arcadeDrive(double y, double twist)
 	{
-		robotDrive.driveCartesian(x, y, twist, angle);
-	}
-
-	public void stop()
-	{
-		drive(0, 0, 0, 0);
+		mDrive.arcadeDrive(y, twist);
 	}
 
 	public void tankDriveLeft(double output)
 	{
-		frontLeft.set(output);
-		rearLeft.set(output);
+		mLeftDrive.set(output);
 	}
 
 	public void tankDriveRight(double output)
 	{
-		frontRight.set(-output);
-		rearRight.set(-output);
+		mRightDrive.set(output);
+	}
+
+	public void stop()
+	{
+		arcadeDrive(0, 0);
 	}
 
 	/////////////////////////////////// ENCODER STUFF
 	/////////////////////////////////// ///////////////////////////////////
-
-	public void resetLeftEncoder()
-	{
-		initLeftPosition = getLeftPositionInches();
-	}
-
-	public double getLeftPositionInches()
-	{
-		return (-frontLeft.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
-	}
-
-	public double getLeftDistanceInches()
-	{
-		return getLeftPositionInches() - initLeftPosition;
-	}
 
 	public void resetRightEncoder()
 	{
@@ -95,7 +85,7 @@ public class DriveTrain extends Subsystem
 
 	public double getRightPositionInches()
 	{
-		return (frontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
+		return (mFrontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
 	}
 
 	public double getRightDistanceInches()
@@ -103,28 +93,46 @@ public class DriveTrain extends Subsystem
 		return getRightPositionInches() - initRightPosition;
 	}
 
-	public double getAverageEncoderDistance()
+	//////////////////////////////// PID STUFF ////////////////////////////////
+
+	@Override
+	public void pidWrite(double output)
 	{
-		return (getLeftDistanceInches() + getRightDistanceInches()) / 2.0;
+		if (Robot.driveTrainPID.getTwistCorrection() == Correction.kLeft)
+		{
+			tankDriveRight(output + TWIST_CORRECTION);
+			tankDriveLeft(output - TWIST_CORRECTION);
+		} else if (Robot.driveTrainPID.getTwistCorrection() == Correction.kRight)
+		{
+			tankDriveRight(output - TWIST_CORRECTION);
+			tankDriveLeft(output + TWIST_CORRECTION);
+		}
 	}
 
-	public void resetEncoders()
+	@Override
+	public void setPIDSourceType(PIDSourceType pidSource)
 	{
-		resetLeftEncoder();
-		resetRightEncoder();
 	}
 
-	//////////////////////////////// END OF ENCODER STUFF
-	//////////////////////////////// ////////////////////////////////
+	@Override
+	public PIDSourceType getPIDSourceType()
+	{
+		return PIDSourceType.kDisplacement;
+	}
+
+	@Override
+	public double pidGet()
+	{
+		return getRightDistanceInches();
+	}
 
 	public void report()
 	{
-		SmartDashboard.putNumber("Front Left Speed", frontLeft.get());
-		SmartDashboard.putNumber("Rear Left Speed", rearLeft.get());
-		SmartDashboard.putNumber("Front Right Speed", frontRight.get());
-		SmartDashboard.putNumber("Rear Right Speed", rearRight.get());
+		SmartDashboard.putNumber("DriveTrain Front Left Speed", mFrontLeft.get());
+		SmartDashboard.putNumber("DriveTrain Rear Left Speed", mRearLeft.get());
+		SmartDashboard.putNumber("DriveTrain Front Right Speed", mFrontRight.get());
+		SmartDashboard.putNumber("DriveTrain Rear Right Speed", mRearRight.get());
 
-		SmartDashboard.putNumber("Left Encoder", getLeftDistanceInches());
-		SmartDashboard.putNumber("Right Encoder", getRightDistanceInches());
+		SmartDashboard.putNumber("DriveTrain Right Encoder", getRightDistanceInches());
 	}
 }

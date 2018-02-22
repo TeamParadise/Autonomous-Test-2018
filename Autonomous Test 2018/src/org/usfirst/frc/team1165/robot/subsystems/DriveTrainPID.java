@@ -3,9 +3,6 @@ package org.usfirst.frc.team1165.robot.subsystems;
 import org.usfirst.frc.team1165.robot.Robot;
 
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,70 +11,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class DriveTrainPID extends Subsystem
 {
-	private PIDController leftController;
-	private PIDController rightController;
+	private PIDController rightController = new PIDController(0.01, 0, 0, 0.01, Robot.driveTrain, Robot.driveTrain);
 
-	private double leftOutput;
-	private double rightOutput;
+	private double initHeading;
+
+	public enum Correction
+	{
+		kLeft, kRight, kNone
+	}
 
 	public DriveTrainPID()
 	{
-		leftController = new PIDController(0.01, 0, 0, 0.01, new PIDSource()
-		{
-			public void setPIDSourceType(PIDSourceType pidSource)
-			{
-			}
-
-			public PIDSourceType getPIDSourceType()
-			{
-				return PIDSourceType.kDisplacement;
-			}
-
-			public double pidGet()
-			{
-				return Robot.driveTrain.getLeftDistanceInches();
-			}
-		}, new PIDOutput()
-		{
-			public void pidWrite(double output)
-			{
-				leftOutput = output;
-				Robot.driveTrain.tankDriveLeft(output);
-			}
-		});
-
-		rightController = new PIDController(0.01, 0, 0, 0.01, new PIDSource()
-		{
-			public void setPIDSourceType(PIDSourceType pidSource)
-			{
-			}
-
-			public PIDSourceType getPIDSourceType()
-			{
-				return PIDSourceType.kDisplacement;
-			}
-
-			public double pidGet()
-			{
-				return Robot.driveTrain.getRightDistanceInches();
-			}
-		}, new PIDOutput()
-		{
-			public void pidWrite(double output)
-			{
-				rightOutput = output;
-				Robot.driveTrain.tankDriveRight(output);
-			}
-		});
-
 		resetInputRange(100);
 
-		leftController.setOutputRange(-0.3, 0.3);
-		leftController.setAbsoluteTolerance(5);
-		leftController.setContinuous(false);
-
 		rightController.setOutputRange(-0.3, 0.3);
-		rightController.setAbsoluteTolerance(5);
+		rightController.setAbsoluteTolerance(2);
 		rightController.setContinuous(false);
 	}
 
@@ -89,37 +37,50 @@ public class DriveTrainPID extends Subsystem
 
 	public void resetInputRange(double overUnder)
 	{
-		leftController.setInputRange(-overUnder, overUnder);
 		rightController.setInputRange(-overUnder, overUnder);
 	}
 
 	public void enable()
 	{
-		leftController.enable();
 		rightController.enable();
+
+		initHeading = Robot.navx.getFusedHeading();
 	}
 
 	public void disable()
 	{
-		leftController.disable();
 		rightController.disable();
 	}
 
 	public void setSetpoint(double targetDistance)
 	{
-		leftController.setSetpoint(targetDistance);
 		rightController.setSetpoint(targetDistance);
 	}
 
 	public boolean onTarget()
 	{
-		return leftController.onTarget() && rightController.onTarget();
+		return rightController.onTarget();
+	}
+
+	public Correction getTwistCorrection()
+	{
+		// if the difference in heading is greater than absolute tolerance...
+		if (Math.abs(Robot.navx.getFusedHeading() - initHeading) > 2)
+			// ...and the robot is to the left of heading.
+			if (Robot.navx.getFusedHeading() > initHeading)
+				return Correction.kLeft;
+			// ...and the robot is to the right.
+			else
+				return Correction.kRight;
+		// if the difference in heading is within tolerance..
+		else
+			// ...do nothing.
+			return Correction.kNone;
 	}
 
 	public void report()
 	{
-		SmartDashboard.putNumber("Drive Train PID Left Output", leftOutput);
-		SmartDashboard.putNumber("Drive Train PID Right Output", rightOutput);
 		SmartDashboard.putBoolean("Drive Train PID On Target", onTarget());
+		SmartDashboard.putNumber("Drive Train PID Initial Heading", initHeading);
 	}
 }

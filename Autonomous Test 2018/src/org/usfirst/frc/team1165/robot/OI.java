@@ -50,8 +50,8 @@ public class OI
 
 	public void report()
 	{
-		SmartDashboard.putNumber("X", getX());
-		SmartDashboard.putNumber("Y", getY());
-		SmartDashboard.putNumber("Twist", getTwist());
+		SmartDashboard.putNumber("OI X", getX());
+		SmartDashboard.putNumber("OI Y", getY());
+		SmartDashboard.putNumber("OI Twist", getTwist());
 	}
 }

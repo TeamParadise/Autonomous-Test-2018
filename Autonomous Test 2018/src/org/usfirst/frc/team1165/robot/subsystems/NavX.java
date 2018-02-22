@@ -56,8 +56,8 @@ public class NavX extends Subsystem
 
 	public void report()
 	{
-		SmartDashboard.putNumber("Angle", ahrs.getAngle());
-		SmartDashboard.putNumber("Angle Modulus", ahrs.getAngle() % 360);
-		SmartDashboard.putNumber("Fused Heading", ahrs.getFusedHeading());
+		SmartDashboard.putNumber("NavX Angle", ahrs.getAngle());
+		SmartDashboard.putNumber("NavX Angle Modulus", ahrs.getAngle() % 360);
+		SmartDashboard.putNumber("NavX Fused Heading", ahrs.getFusedHeading());
 	}
 }

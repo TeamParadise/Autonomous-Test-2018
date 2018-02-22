@@ -55,7 +55,7 @@ public class Robot extends TimedRobot
 		oi = new OI();
 
 		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Drive Straight (45)", new DriveStraight(45));
+		autoChooser.addObject("Drive Straight (45)", new DriveStraight(90));
 		autoChooser.addObject("Auto Test", new AutoTest());
 		autoChooser.addDefault("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
 
