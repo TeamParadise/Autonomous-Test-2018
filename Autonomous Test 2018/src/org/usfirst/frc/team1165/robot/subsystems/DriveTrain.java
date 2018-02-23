@@ -12,13 +12,10 @@ import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_FRONT_RIGHT;
 import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_REAR_LEFT;
 import static org.usfirst.frc.team1165.robot.RobotMap.DRIVE_TALON_REAR_RIGHT;
 
-import org.usfirst.frc.team1165.robot.Robot;
 import org.usfirst.frc.team1165.robot.commands.DriveWithJoystick;
-import org.usfirst.frc.team1165.robot.subsystems.DriveTrainPID.Correction;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -29,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * An example subsystem. You can replace me with your own Subsystem.
  */
-public class DriveTrain extends Subsystem implements PIDSource, PIDOutput
+public class DriveTrain extends Subsystem implements PIDSource
 {
 	private WPI_TalonSRX mFrontLeft = new WPI_TalonSRX(DRIVE_TALON_FRONT_LEFT);
 	private WPI_TalonSRX mRearLeft = new WPI_TalonSRX(DRIVE_TALON_REAR_LEFT);
@@ -41,21 +38,17 @@ public class DriveTrain extends Subsystem implements PIDSource, PIDOutput
 
 	private DifferentialDrive mDrive = new DifferentialDrive(mLeftDrive, mRightDrive);
 
-	private double initRightPosition = 0;
-
-	private static final double TWIST_CORRECTION = 0.05;
-
-	public DriveTrain()
-	{
-		resetRightEncoder();
-	}
-
 	public void initDefaultCommand()
 	{
 		setDefaultCommand(new DriveWithJoystick());
 	}
 
 	public void arcadeDrive(double y, double twist)
+	{
+		mDrive.arcadeDrive(y, twist, false);
+	}
+	
+	public void arcadeDriveDamped(double y, double twist)
 	{
 		mDrive.arcadeDrive(y, twist);
 	}
@@ -75,39 +68,26 @@ public class DriveTrain extends Subsystem implements PIDSource, PIDOutput
 		arcadeDrive(0, 0);
 	}
 
-	/////////////////////////////////// ENCODER STUFF
-	/////////////////////////////////// ///////////////////////////////////
-
-	public void resetRightEncoder()
+	public void resetEncoder()
 	{
-		initRightPosition = getRightPositionInches();
+		mFrontRight.getSensorCollection().setQuadraturePosition(0, 0);
 	}
 
-	public double getRightPositionInches()
+	public double getPosition()
 	{
 		return (mFrontRight.getSensorCollection().getQuadraturePosition() * Math.PI * 6) / 4096;
 	}
 
-	public double getRightDistanceInches()
+	public double getVelocity()
 	{
-		return getRightPositionInches() - initRightPosition;
+		return (mFrontRight.getSensorCollection().getQuadratureVelocity() * Math.PI * 6) / 4096;
 	}
 
-	//////////////////////////////// PID STUFF ////////////////////////////////
-
-	@Override
-	public void pidWrite(double output)
-	{
-		if (Robot.driveTrainPID.getTwistCorrection() == Correction.kLeft)
-		{
-			tankDriveRight(output + TWIST_CORRECTION);
-			tankDriveLeft(output - TWIST_CORRECTION);
-		} else if (Robot.driveTrainPID.getTwistCorrection() == Correction.kRight)
-		{
-			tankDriveRight(output - TWIST_CORRECTION);
-			tankDriveLeft(output + TWIST_CORRECTION);
-		}
+	public boolean isZeroed() {
+		return Math.abs(getPosition()) < 0.01;
 	}
+	
+	//////////////////////////////// PID STUFF
 
 	@Override
 	public void setPIDSourceType(PIDSourceType pidSource)
@@ -123,16 +103,17 @@ public class DriveTrain extends Subsystem implements PIDSource, PIDOutput
 	@Override
 	public double pidGet()
 	{
-		return getRightDistanceInches();
+		return getPosition();
 	}
 
 	public void report()
 	{
-		SmartDashboard.putNumber("DriveTrain Front Left Speed", mFrontLeft.get());
-		SmartDashboard.putNumber("DriveTrain Rear Left Speed", mRearLeft.get());
-		SmartDashboard.putNumber("DriveTrain Front Right Speed", mFrontRight.get());
-		SmartDashboard.putNumber("DriveTrain Rear Right Speed", mRearRight.get());
+		SmartDashboard.putNumber(getName() + " Front Left Speed", mFrontLeft.get());
+//		SmartDashboard.putNumber(getName() + " Rear Left Speed", mRearLeft.get());
+//		SmartDashboard.putNumber(getName() + " Front Right Speed", mFrontRight.get());
+//		SmartDashboard.putNumber(getName() + " Rear Right Speed", mRearRight.get());
 
-		SmartDashboard.putNumber("DriveTrain Right Encoder", getRightDistanceInches());
+		SmartDashboard.putNumber(getName() + " Position", getPosition());
+		SmartDashboard.putNumber(getName() + " Velocity", getVelocity());
 	}
 }

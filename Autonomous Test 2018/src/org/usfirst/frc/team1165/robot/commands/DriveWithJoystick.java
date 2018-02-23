@@ -1,8 +1,9 @@
 package org.usfirst.frc.team1165.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
-
 import org.usfirst.frc.team1165.robot.Robot;
+import org.usfirst.frc.team1165.util.drivers.OI;
+
+import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
@@ -11,42 +12,25 @@ public class DriveWithJoystick extends Command
 {
 	public DriveWithJoystick()
 	{
-		requires(Robot.driveTrain);
-		requires(Robot.navx);
+		requires(Robot.mDriveTrain);
 	}
 
-	// Called just before this Command runs the first time
-	@Override
-	protected void initialize()
-	{
-	}
-
-	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute()
 	{
-		Robot.driveTrain.drive(Robot.oi.getX(), Robot.oi.getY(), Robot.oi.getTwist(), 0);
+		Robot.mDriveTrain.arcadeDrive(OI.getY(), OI.getTwist());
+		//DriverStation.reportWarning(Double.toString(OI.getY()), false);
 	}
 
-	// Make this return true when this Command no longer needs to run execute()
 	@Override
 	protected boolean isFinished()
 	{
 		return false;
 	}
 
-	// Called once after isFinished returns true
 	@Override
 	protected void end()
 	{
-		Robot.driveTrain.stop();
-	}
-
-	// Called when another command which requires one or more of the same
-	// subsystems is scheduled to run
-	@Override
-	protected void interrupted()
-	{
-		end();
+		Robot.mDriveTrain.stop();
 	}
 }

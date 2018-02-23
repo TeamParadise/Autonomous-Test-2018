@@ -1,7 +1,9 @@
 package org.usfirst.frc.team1165.robot.commands.auto;
 
-import org.usfirst.frc.team1165.robot.Robot;
+import static org.usfirst.frc.team1165.robot.Robot.mDriveTrain;
+import static org.usfirst.frc.team1165.robot.Robot.mDriveStraightPID;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -9,49 +11,46 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveStraight extends Command
 {
-	private double targetDistance;
+	private double mTarget;
 
-	public DriveStraight(double targetDistance)
+	private double mInitial;
+	private double mFinal;
+	
+	public DriveStraight(double target)
 	{
-		this.targetDistance = targetDistance;
-
-		requires(Robot.driveTrain);
-		requires(Robot.driveTrainPID);
+		mTarget = target;
+		
+		requires(mDriveTrain);
+		requires(mDriveStraightPID);
 	}
 
-	// Called just before this Command runs the first time
+	@Override
 	protected void initialize()
 	{
-		Robot.driveTrain.resetEncoders();
+		mInitial = mDriveTrain.getPosition();
+		
+		DriverStation.reportWarning("Initial Position: " + mInitial, false);
 
-		Robot.driveTrainPID.resetInputRange(targetDistance * 2);
-		Robot.driveTrainPID.setSetpoint(targetDistance);
-		Robot.driveTrainPID.enable();
+		mDriveStraightPID.resetInputRange(mTarget * 2);
+		mDriveStraightPID.setSetpointRelative(mTarget);
+		mDriveStraightPID.enable();
 	}
 
-	// Called repeatedly when this Command is scheduled to run
-	protected void execute()
-	{
-	}
-
-	// Make this return true when this Command no longer needs to run execute()
+	@Override
 	protected boolean isFinished()
 	{
-		return Robot.driveTrainPID.onTarget();
+		return mDriveStraightPID.onTarget();
 	}
 
-	// Called once after isFinished returns true
+	@Override
 	protected void end()
 	{
-		Robot.driveTrain.stop();
-		Robot.driveTrainPID.disable();
+		mFinal = mDriveTrain.getPosition();
+		
+		DriverStation.reportWarning("Final Position: " + mFinal, false);
+		DriverStation.reportWarning("Delta Position: " + (mFinal - mInitial), false);
 
-	}
-
-	// Called when another command which requires one or more of the same
-	// subsystems is scheduled to run
-	protected void interrupted()
-	{
-		end();
+		mDriveTrain.stop();
+		mDriveStraightPID.disable();
 	}
 }

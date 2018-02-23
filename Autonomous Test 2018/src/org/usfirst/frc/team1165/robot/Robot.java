@@ -7,19 +7,13 @@
 
 package org.usfirst.frc.team1165.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import org.usfirst.frc.team1165.robot.commands.auto.AutoTest;
-import org.usfirst.frc.team1165.robot.commands.auto.DriveStraight;
-import org.usfirst.frc.team1165.robot.commands.auto.RotateToRelHeading;
+import org.usfirst.frc.team1165.robot.subsystems.DriveStraightPID;
 import org.usfirst.frc.team1165.robot.subsystems.DriveTrain;
-import org.usfirst.frc.team1165.robot.subsystems.DriveTrainPID;
-import org.usfirst.frc.team1165.robot.subsystems.NavX;
-import org.usfirst.frc.team1165.robot.subsystems.NavXPID;
+import org.usfirst.frc.team1165.robot.subsystems.RotateToRelHeadingPID;
+import org.usfirst.frc.team1165.util.drivers.NavX;
+
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,16 +24,16 @@ import org.usfirst.frc.team1165.robot.subsystems.NavXPID;
  */
 public class Robot extends TimedRobot
 {
-	public static DriveTrain driveTrain;
-	public static DriveTrainPID driveTrainPID;
-	public static NavX navx;
-	public static NavXPID navxPID;
-
-	public static OI oi;
-
-	private static SendableChooser<Command> autoChooser;
-	private static Command autonomousCommand;
-
+	public static DriveTrain mDriveTrain = new DriveTrain();
+	public static DriveStraightPID mDriveStraightPID = new DriveStraightPID();
+//	public static DriveTrainPID mDriveTrainPID = new DriveTrainPID();
+	public static RotateToRelHeadingPID mRotatePID = new RotateToRelHeadingPID();
+//
+//	private static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+//	private static Command autonomousCommand;
+//
+//	private static Preferences mPrefs = Preferences.getInstance();
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -47,30 +41,28 @@ public class Robot extends TimedRobot
 	@Override
 	public void robotInit()
 	{
-		driveTrain = new DriveTrain();
-		driveTrainPID = new DriveTrainPID();
-		navx = new NavX();
-		navxPID = new NavXPID();
+//		mPrefs.putBoolean("Reporting", true);
+		
+//		autoChooser.addObject("Drive Straight (45)", new DriveStraight(90));
+//		autoChooser.addObject("Auto Test", new AutoTest());
+//		autoChooser.addDefault("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
 
-		oi = new OI();
-
-		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Drive Straight (45)", new DriveStraight(90));
-		autoChooser.addObject("Auto Test", new AutoTest());
-		autoChooser.addDefault("Rotate to Relative Heading (90)", new RotateToRelHeading(90));
-
-		SmartDashboard.putData("Auto Mode", autoChooser);
+//		SmartDashboard.putData("Auto Mode", autoChooser);
 	}
 
 	@Override
 	public void robotPeriodic()
 	{
-		driveTrain.report();
-		driveTrainPID.report();
-		navx.report();
-		navxPID.report();
+//		if(mPrefs.getBoolean("Reporting", true))
+//		{
+//			mDriveTrain.report();
+//			mDriveStraightPID.report();
+//			mDriveTrainPID.report();
+//			mRotatePID.report();
 
-		oi.report();
+			NavX.report();
+//			OI.report();
+//		}
 	}
 
 	/**
@@ -104,10 +96,10 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousInit()
 	{
-		autonomousCommand = autoChooser.getSelected();
-
-		if (autonomousCommand != null)
-			autonomousCommand.start();
+//		autonomousCommand = autoChooser.getSelected();
+//
+//		if (autonomousCommand != null)
+//			autonomousCommand.start();
 	}
 
 	/**
@@ -122,12 +114,8 @@ public class Robot extends TimedRobot
 	@Override
 	public void teleopInit()
 	{
-		// This makes sure that the autonomous stops running when
-		// teleop starts running. If you want the autonomous to
-		// continue until interrupted by another command, remove
-		// this line or comment it out.
-		if (autonomousCommand != null)
-			autonomousCommand.cancel();
+//		if (autonomousCommand != null)
+//			autonomousCommand.cancel();
 	}
 
 	/**
